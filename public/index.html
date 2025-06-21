@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juristische Gutachten Visualisierung</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="toolbar">
+        <div class="toolbar-group">
+            <label for="template-select">Vorlage:</label>
+            <select id="template-select">
+                <option value="">Auswählen...</option>
+            </select>
+            <!-- <button id="load-template-btn">Laden</button> --><!-- Entfernt für klarere UI -->
+        </div>
+        <div class="toolbar-group">
+            <button id="auto-layout-btn">Automatisch anordnen</button>
+        </div>
+        <div class="toolbar-group">
+            <button id="save-json-btn">Speichern (JSON)</button>
+            <label for="load-json-input" class="button-like-label">Laden (JSON)</label>
+            <input type="file" id="load-json-input" accept=".json,application/json" style="display: none;">
+        </div>
+        <div class="toolbar-group">
+            <button id="show-text-import-btn">Text-Import anzeigen</button>
+        </div>
+        <div class="toolbar-group">
+            <button id="export-png-btn">Export als PNG (experimentell)</button>
+            <button id="export-svg-btn">Export als SVG (experimentell)</button>
+        </div>
+        <div class="toolbar-group">
+             <button id="export-path-text-btn">Pfad als Text exportieren (Dummy)</button>
+        </div>
+        <!-- Weitere Toolbar-Elemente hier -->
+    </div>
+    <div id="text-import-dialog" class="dialog" style="display: none;">
+        <h3>Gutachten aus Text importieren</h3>
+        <p>Fügen Sie hier die strukturierte Textbeschreibung ein (Syntax-Details siehe Doku):</p>
+        <textarea id="text-import-area" rows="10" cols="80" placeholder="z.B.&#10;A. Anspruch entstanden&#10;  I. Vertrag geschlossen? [+]&#10;    1. Angebot&#10;    2. Annahme&#10;B. Anspruch nicht erloschen [- P=0.7]"></textarea>
+        <div class="dialog-buttons">
+            <button id="execute-text-import-btn">Importieren</button>
+            <button id="cancel-text-import-btn">Abbrechen</button>
+        </div>
+    </div>
+    <div id="root">
+        <div id="workspace-area">
+            <div id="canvas-container">
+                <!-- Knoten und Kanten werden hier dynamisch per JS eingefügt -->
+            </div>
+        </div>
+    </div>
+    <!--
+        Für eine echte Anwendung würde man hier kompilierte JS-Bundles laden.
+        Die direkte Einbindung von src/index.js ist nur für einfache Beispiele ohne Build-Prozess.
+    -->
+    <!-- Einbindung von html-to-image für Export-Funktionen (experimentell) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js" integrity="sha512-E9o9xDtMbcYIgnoCbL8LDG3v2XWdG8R/2GfXW1J0M2wPjKxWJmQn8q6R8rB1jP2W_z/f1_z/G/S7Y4fD9/Hw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src="../src/index.js"></script>
+</body>
+</html>

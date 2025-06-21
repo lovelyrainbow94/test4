@@ -1,0 +1,176 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e0e0e0; /* Etwas dunklerer Hintergrund für Kontrast */
+    overflow: hidden; /* Verhindert Scrollbalken am Body */
+    display: flex;
+    flex-direction: column; /* Toolbar oben, dann root */
+}
+
+#toolbar {
+    padding: 10px;
+    background-color: #d0d0d0;
+    border-bottom: 1px solid #bbb;
+    display: flex;
+    flex-wrap: wrap; /* Erlaubt Umbruch bei wenig Platz */
+    gap: 15px; /* Mehr Abstand zwischen Gruppen */
+    align-items: center;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 5px; /* Abstand innerhalb einer Gruppe */
+    align-items: center;
+    padding: 5px;
+    border-right: 1px solid #ccc; /* Trennlinie zwischen Gruppen */
+}
+.toolbar-group:last-child {
+    border-right: none;
+}
+
+
+#toolbar button, #toolbar select, .button-like-label {
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid #aaa;
+    background-color: #efefef;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+#toolbar button:hover, #toolbar select:hover, .button-like-label:hover {
+    background-color: #e0e0e0;
+}
+
+.button-like-label {
+    display: inline-block; /* Damit Padding etc. wirken */
+}
+
+.dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #aaa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000; /* Über anderen Elementen */
+    min-width: 400px;
+    max-width: 90vw; /* Verhindert Überlaufen auf kleinen Bildschirmen */
+    max-height: 90vh; /* Verhindert Überlaufen auf kleinen Bildschirmen */
+    overflow-y: auto; /* Scrollbar machen, falls Inhalt zu hoch */
+}
+
+.dialog h3 {
+    margin-top: 0;
+}
+
+.dialog textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+#root {
+    width: 100%; /* Nimmt volle Breite ein */
+    flex-grow: 1; /* Nimmt verbleibende Höhe ein */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Wichtig, damit #workspace-area nicht über #root hinausgeht */
+}
+
+#workspace-area {
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    overflow: auto; /* Ermöglicht Scrollen, wenn Inhalt größer ist */
+    position: relative; /* Wichtig für absolute Positionierung von Kindelementen (Knoten) und für den Zoom-Container */
+    cursor: grab; /* Standard-Cursor für Panning-Möglichkeit */
+}
+
+#workspace-area.grabbing {
+    cursor: grabbing;
+}
+
+#canvas-container {
+    position: absolute; /* Wird für Zoom und Pan transformiert */
+    /* Die Größe dieses Containers würde dynamisch wachsen, wenn Elemente außerhalb des sichtbaren Bereichs hinzugefügt werden.
+       In einer echten Implementierung würde man dies evtl. nicht über CSS-Größe, sondern über die Render-Logik der Canvas steuern. */
+    width: 200%; /* Beispiel: Startgröße, die Panning erlaubt */
+    height: 200%;
+    transform-origin: top left; /* Wichtig für Zoom-Verhalten */
+    /* transform: scale(1) translate(0px, 0px); wird per JS gesetzt */
+}
+
+.node {
+    position: absolute; /* Damit Knoten frei auf dem #canvas-container platziert werden können */
+    background-color: white;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    min-width: 150px;
+    min-height: 50px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    cursor: move;
+    user-select: none; /* Verhindert Textauswahl beim Ziehen */
+}
+
+.node-title {
+    font-weight: bold;
+    font-size: 1em;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+}
+
+.node-text {
+    font-size: 0.9em;
+    min-height: 30px; /* Platz für Text */
+}
+
+.node-text p {
+    margin: 0 0 5px 0;
+}
+.node-text ul, .node-text ol {
+    margin: 0 0 5px 20px;
+    padding: 0;
+}
+.node-text li {
+    margin-bottom: 2px;
+}
+
+
+/* Visuelle Hervorhebung für Endergebnisse */
+.node.result-positive {
+    background-color: #d4edda; /* Hellgrün */
+    border-color: #c3e6cb;
+}
+
+.node.result-negative {
+    background-color: #f8d7da; /* Hellrot */
+    border-color: #f5c6cb;
+}
+
+.node.result-partial {
+    background-color: #fff3cd; /* Hellgelb */
+    border-color: #ffeeba;
+}
+
+/* Verbindungslinien (vereinfachte Darstellung, echte Linien würden per SVG/Canvas gezeichnet) */
+/* Diese CSS-Klasse ist nur ein Platzhalter, da Linien dynamisch generiert werden müssten */
+.edge-line {
+    position: absolute;
+    border: 1px solid red; /* Nur zur Visualisierung, dass etwas da sein sollte */
+    z-index: -1; /* Hinter den Knoten */
+}

@@ -1,0 +1,33 @@
+{
+  "name": "juristische-gutachten-visualisierung",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Anwendung zur visuellen Erstellung und Analyse von juristischen Gutachten.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "echo \"Entwicklungsserver starten (muss noch implementiert werden)\"",
+    "build": "echo \"Build-Prozess (muss noch implementiert werden)\"",
+    "test": "echo \"Tests ausführen (muss noch implementiert werden)\""
+  },
+  "dependencies": {
+    "fabric": "^5.3.0", // Beispiel für eine Canvas-Bibliothek
+    "react": "^18.2.0", // Beispiel für ein UI-Framework
+    "react-dom": "^18.2.0" // Beispiel für ein UI-Framework
+  },
+  "devDependencies": {
+    "webpack": "^5.70.0", // Beispiel für einen Bundler
+    "webpack-cli": "^4.9.0",
+    "babel-loader": "^8.2.0",
+    "@babel/core": "^7.17.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-react": "^7.16.0"
+  },
+  "keywords": [
+    "legal",
+    "visualization",
+    "mindmap",
+    "expert-opinion"
+  ],
+  "author": "Jules KI Agent",
+  "license": "ISC"
+}
