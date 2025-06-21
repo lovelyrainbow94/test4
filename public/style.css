@@ -124,6 +124,7 @@ body {
     box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
     cursor: move;
     user-select: none; /* Verhindert Textauswahl beim Ziehen */
+    z-index: 1; /* Stellt sicher, dass Knoten über dem SVG-Layer (z-index: 0) liegen */
 }
 
 .node-title {

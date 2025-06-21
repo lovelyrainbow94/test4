@@ -47,7 +47,15 @@
     <div id="root">
         <div id="workspace-area">
             <div id="canvas-container">
-                <!-- Knoten und Kanten werden hier dynamisch per JS eingefügt -->
+                <svg id="svg-layer" width="100%" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 0;">
+                    <defs>
+                        <!-- Definition für Pfeilspitzen etc. kommt hier später rein -->
+                    </defs>
+                    <g id="edges-group">
+                        <!-- Kanten (Linien/Pfade) werden hier dynamisch per JS eingefügt -->
+                    </g>
+                </svg>
+                <!-- Knoten-DIVs werden über dem SVG-Layer gerendert (durch höhere z-index oder natürliche Reihenfolge, wenn SVG zuerst kommt) -->
             </div>
         </div>
     </div>
