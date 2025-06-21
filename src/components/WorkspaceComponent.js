@@ -1,8 +1,7 @@
 import { LegalNode, LegalEdge } from '../core/dataModels.js';
 import { generateId } from '../utils/helpers.js';
 import { createNodeElement, updateNodeElement } from './NodeComponent.js';
-// Import für EdgeComponent (Linien zeichnen) wird später benötigt
-// import { createEdgeElement, updateEdgeElement } from './EdgeComponent.js';
+import { createSvgEdgeElement, updateSvgEdgeElement, getArrowheadDefinition } from './EdgeComponent.js';
 
 
 // Globale Zustandsvariablen für die Arbeitsfläche (werden jetzt intern verwaltet)
@@ -21,6 +20,8 @@ let dragOffsetX, dragOffsetY;
 // DOM-Elemente
 let workspaceArea;
 let canvasContainer;
+let svgLayer;
+let edgesGroup;
 
 /**
  * Initialisiert die Arbeitsfläche, setzt Event-Listener.
@@ -28,10 +29,22 @@ let canvasContainer;
 export function initializeWorkspace() {
     workspaceArea = document.getElementById('workspace-area');
     canvasContainer = document.getElementById('canvas-container');
+    svgLayer = document.getElementById('svg-layer');
+    edgesGroup = document.getElementById('edges-group');
 
-    if (!workspaceArea || !canvasContainer) {
-        console.error("Workspace-Elemente nicht im DOM gefunden!");
+    if (!workspaceArea || !canvasContainer || !svgLayer || !edgesGroup) {
+        console.error("Wichtige Workspace- oder SVG-Elemente nicht im DOM gefunden!");
         return;
+    }
+
+    // Pfeilspitzen-Definition zum SVG hinzufügen
+    const defs = svgLayer.querySelector('defs') || document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    if (!svgLayer.contains(defs)) { // Nur hinzufügen, wenn nicht schon da (obwohl es im HTML ist)
+        svgLayer.insertBefore(defs, svgLayer.firstChild);
+    }
+    const arrowhead = getArrowheadDefinition();
+    if (!defs.querySelector(`#${arrowhead.id}`)) { // Verhindert doppeltes Hinzufügen bei versehentlichem Mehrfachaufruf
+        defs.appendChild(arrowhead);
     }
 
     // Event Listener für Panning
@@ -88,8 +101,20 @@ function pan(event) {
                 nodeElement.style.left = `${node.x}px`;
                 nodeElement.style.top = `${node.y}px`;
             }
-            // TODO: Kanten neu zeichnen, die mit diesem Knoten verbunden sind
-            // renderEdgesForNode(node.id);
+
+            // Verbundene Kanten aktualisieren
+            _edges.forEach(edgeData => {
+                if (edgeData.sourceNodeId === activeDragNodeId || edgeData.targetNodeId === activeDragNodeId) {
+                    const edgeGroupElement = document.getElementById(`edge-group-${edgeData.id}`);
+                    if (edgeGroupElement) {
+                        const sourceN = _nodes.find(n => n.id === edgeData.sourceNodeId);
+                        const targetN = _nodes.find(n => n.id === edgeData.targetNodeId);
+                        if (sourceN && targetN) {
+                            updateSvgEdgeElement(edgeGroupElement, sourceN, targetN, edgeData);
+                        }
+                    }
+                }
+            });
         }
     }
 }
@@ -197,10 +222,15 @@ export function addEdge(edgeData) {
         return null;
     }
     _edges.push(edgeData);
-    // Hier würde die Kante gezeichnet (z.B. mit SVG oder Canvas API)
-    // const edgeElement = createEdgeElement(edgeData, _nodes);
-    // if (edgeElement) canvasContainer.appendChild(edgeElement); // Oder in einem separaten SVG-Layer
-    console.log("Kante hinzugefügt (visuelle Implementierung fehlt):", edgeData);
+
+    const edgeElement = createSvgEdgeElement(edgeData, _nodes);
+    if (edgeElement && edgesGroup) {
+        edgesGroup.appendChild(edgeElement);
+    } else {
+        console.warn("Konnte SVG-Element für Kante nicht erstellen oder edgesGroup nicht gefunden.", edgeData);
+    }
+
+    console.log("Kante hinzugefügt und versucht zu zeichnen:", edgeData);
     return edgeData;
 }
 
@@ -210,9 +240,13 @@ export function addEdge(edgeData) {
 export function clearWorkspace() {
     _nodes = [];
     _edges = [];
-    if (canvasContainer) {
-        while (canvasContainer.firstChild) {
-            canvasContainer.removeChild(canvasContainer.firstChild);
+    if (canvasContainer) { // Knoten-DIVs entfernen
+        const nodesToRemove = canvasContainer.querySelectorAll('.node');
+        nodesToRemove.forEach(nodeEl => canvasContainer.removeChild(nodeEl));
+    }
+    if (edgesGroup) { // SVG-Kanten entfernen
+        while (edgesGroup.firstChild) {
+            edgesGroup.removeChild(edgesGroup.firstChild);
         }
     }
     // Ggf. Zoom/Pan zurücksetzen
@@ -228,13 +262,18 @@ export function clearWorkspace() {
  * Nützlich nach größeren Änderungen (Laden, Import, Layout-Anpassung).
  */
 export function renderAll() {
-    if (!canvasContainer) {
-        console.error("renderAll: canvasContainer ist nicht initialisiert.");
+    if (!canvasContainer || !edgesGroup) {
+        console.error("renderAll: canvasContainer oder edgesGroup ist nicht initialisiert.");
         return;
     }
+
     // Bestehende Knoten-DOM-Elemente entfernen
-    while (canvasContainer.firstChild) {
-        canvasContainer.removeChild(canvasContainer.firstChild);
+    const existingNodeElements = canvasContainer.querySelectorAll('.node');
+    existingNodeElements.forEach(el => el.remove());
+
+    // Bestehende Kanten-SVG-Elemente entfernen
+    while (edgesGroup.firstChild) {
+        edgesGroup.removeChild(edgesGroup.firstChild);
     }
 
     // Knoten neu erstellen und hinzufügen
@@ -243,14 +282,16 @@ export function renderAll() {
         canvasContainer.appendChild(nodeElement);
     });
 
-    // Kanten neu erstellen und hinzufügen (Platzhalter)
+    // Kanten neu erstellen und hinzufügen
     _edges.forEach(edgeData => {
-        // const edgeElement = createEdgeElement(edgeData, _nodes);
-        // if (edgeElement) canvasContainer.appendChild(edgeElement);
+        const edgeElement = createSvgEdgeElement(edgeData, _nodes);
+        if (edgeElement && edgesGroup) {
+            edgesGroup.appendChild(edgeElement);
+        }
     });
 
     applyTransform(); // Sicherstellen, dass Zoom/Pan angewendet wird
-    console.log("WorkspaceComponent.js: Alles neu gerendert.");
+    console.log("WorkspaceComponent.js: Alles neu gerendert (Knoten und Kanten).");
 }
 
 // Getter für Knoten und Kanten (nützlich für externe Module wie LayoutService)

@@ -18,7 +18,7 @@ Im Zentrum der Anwendung steht eine interaktive Arbeitsfläche.
 Prüfungspunkte sind die Bausteine Ihres Gutachtens.
 
 *   **Erstellen:** Neue Knoten werden typischerweise durch das Laden einer Vorlage oder durch Importfunktionen erstellt. Eine Funktion zum manuellen Hinzufügen von Knoten über die UI ist derzeit nicht im Fokus, kann aber über Erweiterungen implementiert werden.
-*   **Verschieben:** Klicken Sie auf einen Knoten und halten Sie die linke Maustaste gedrückt. Ziehen Sie den Knoten an die gewünschte Position auf der Arbeitsfläche und lassen Sie die Maustaste los.
+*   **Verschieben:** Klicken Sie auf einen Knoten und halten Sie die linke Maustaste gedrückt. Ziehen Sie den Knoten an die gewünschte Position auf der Arbeitsfläche und lassen Sie die Maustaste los. Die mit dem Knoten verbundenen Kanten werden dabei automatisch aktualisiert.
 *   **Titel:** Jeder Knoten zeigt einen Titel an. Dieser kann (zukünftig über einen Editor) bearbeitet werden.
 *   **Textuelle Argumentation:** Jeder Knoten enthält einen Textbereich für die detaillierte juristische Argumentation.
     *   **Formatierung (Basis):** Der Text kann einfache HTML-Formatierungen wie `<p>` (Absätze), `<b>` oder `<strong>` (fett), `<i>` oder `<em>` (kursiv) sowie Listen (`<ul>`, `<ol>`, `<li>`) enthalten. Ein vollwertiger Rich-Text-Editor ist für eine zukünftige Version geplant. Aktuell wird eingegebenes HTML direkt dargestellt.
@@ -33,11 +33,17 @@ Prüfungspunkte sind die Bausteine Ihres Gutachtens.
 Prüfungspunkte werden durch Linien (Kanten) miteinander verbunden, um die logische Reihenfolge und Abhängigkeiten darzustellen.
 
 *   **Erstellen:** Kanten werden primär durch Vorlagen oder Importfunktionen erstellt. Eine manuelle Erstellung von Kanten über die UI (z.B. durch Ziehen von einem Knoten zum anderen) ist für zukünftige Versionen vorgesehen.
-*   **Visuelle Darstellung:** *Hinweis: Die visuelle Darstellung der Linien zwischen den Knoten ist in der aktuellen Version noch nicht implementiert. Die Verbindungen existieren im Datenmodell, werden aber nicht gezeichnet.*
-*   **Zusatzinformationen auf Kanten (konzeptionell):**
-    *   **Bewertung:** Eine Kante kann anzeigen, ob die Bedingung des vorangehenden Punktes als erfüllt ("+") oder nicht erfüllt ("-") gilt.
-    *   **Wahrscheinlichkeit:** Eine Zahl von 0 bis 1 kann den Grad der Sicherheit für diesen Argumentationsschritt ausdrücken.
-    (Diese Informationen sind im Datenmodell vorgesehen, ihre Eingabe und Anzeige auf den Kanten ist Teil der zukünftigen Kantenvisualisierung.)
+*   **Visuelle Darstellung:**
+    *   Kanten werden als Linien zwischen den verbundenen Knoten gezeichnet.
+    *   Eine **Pfeilspitze** am Ende der Linie zeigt die Richtung der Abhängigkeit an.
+    *   Die **Farbe der Linie** signalisiert die Bewertung der Bedingung des vorangehenden Punktes:
+        *   **Grün:** Bedingung erfüllt ("+").
+        *   **Orange:** Bedingung nicht erfüllt ("-").
+        *   **Grau:** Keine explizite Bewertung.
+*   **Zusatzinformationen auf Kanten:**
+    *   **Bewertung:** Das Symbol "+" oder "-" wird mittig über der Kante angezeigt, wenn eine Bewertung vorhanden ist.
+    *   **Wahrscheinlichkeit:** Wenn eine Wahrscheinlichkeit (ungleich 1.0) für den Argumentationsschritt festgelegt wurde, wird diese als "P=X.XX" unterhalb der Bewertung (oder mittig, falls keine Bewertung vorhanden) angezeigt.
+    *   *Hinweis:* Die Texte für Bewertung und Wahrscheinlichkeit sind aktuell immer horizontal ausgerichtet. Die Linien verbinden die Mittelpunkte der Knoten.
 
 ## 5. Vorlagen
 
@@ -80,10 +86,11 @@ Sie können Ihre Gutachten speichern, laden und exportieren.
 
 ## 8. Bekannte Einschränkungen (Auswahl)
 
-*   **Visuelle Kantendarstellung:** Verbindungslinien zwischen Knoten werden noch nicht gezeichnet.
-*   **Rich-Text-Editor:** Ein Editor zur komfortablen Formatierung der Knotentexte fehlt noch. HTML kann aber direkt im Datenmodell verwendet werden.
-*   **Manuelles Erstellen von Knoten/Kanten:** Die UI bietet noch keine direkten Werkzeuge zum manuellen Hinzufügen oder Verbinden von Knoten.
-*   **Text-Import:** Die Funktionalität ist nur ein Platzhalter.
-*   **Bild-Export:** Ist experimentell und liefert möglicherweise keine perfekten Ergebnisse für komplexe Diagramme.
+*   **Rich-Text-Editor:** Ein Editor zur komfortablen Formatierung der Knotentexte fehlt noch. HTML kann aber direkt im Datenmodell verwendet werden (oder muss für den Import entsprechend aufbereitet sein).
+*   **Manuelles Erstellen von Knoten/Kanten:** Die UI bietet noch keine direkten Werkzeuge zum manuellen Hinzufügen neuer Knoten oder zum Zeichnen und Bearbeiten von Kanten.
+*   **Kanten-Andockpunkte:** Kanten verbinden aktuell die Mittelpunkte der Knoten. Dies kann bei großen Knoten oder bestimmten Layouts dazu führen, dass Linien ungünstig in Knoten hineinragen oder Pfeilspitzen nicht optimal am Rand positioniert sind.
+*   **Kantenbeschriftungen:** Die Texte für Bewertung und Wahrscheinlichkeit auf den Kanten sind immer horizontal ausgerichtet. Bei sehr kurzen oder stark gewinkelten Kanten kann dies die Lesbarkeit beeinträchtigen oder zu Überlappungen mit der Linie führen.
+*   **Text-Import:** Die Funktionalität zum Importieren von Gutachten aus strukturiertem Text ist aktuell nur ein Platzhalter und führt keine echte Konvertierung durch.
+*   **Bild-Export:** Ist experimentell und basiert auf der Umwandlung des aktuellen DOM-Zustands in ein Bild. Dies liefert möglicherweise keine perfekten oder für alle Anwendungsfälle geeigneten Ergebnisse, insbesondere bei komplexen Diagrammen oder wenn nicht alle Elemente (wie sehr feine Details) optimal erfasst werden.
 
 Wir hoffen, dieses Handbuch hilft Ihnen beim Einstieg!
